@@ -17,9 +17,5 @@ export async function loader({ params }: DataFunctionArgs) {
 export default function PostSlug() {
   const post = useLoaderData<Awaited<ReturnType<typeof loader>>>();
 
-  return (
-    <div>
-      <h1>{post.title}</h1>
-    </div>
-  );
+  return <div dangerouslySetInnerHTML={{ __html: post.html ?? '' }} />;
 }

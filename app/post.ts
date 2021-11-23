@@ -1,11 +1,13 @@
 import path from 'path';
 import fs from 'fs/promises';
+import { processMarkdown } from '@ryanflorence/md';
 import parseFrontMatter from 'front-matter';
 import invariant from 'tiny-invariant';
 
 export interface Post {
   slug: string;
   title: string;
+  html?: string;
 }
 
 export interface PostMarkdownAttributes {
@@ -46,7 +48,7 @@ export async function getPosts(): Promise<Post[]> {
 export async function getPost(slug: string): Promise<Post> {
   const filepath = path.join(postsPath, slug + '.md');
   const file = await fs.readFile(filepath);
-  const { attributes } = parseFrontMatter(file.toString());
+  const { attributes, body } = parseFrontMatter(file.toString());
 
   invariant(
     isValidPostAttributes(attributes),
@@ -56,5 +58,6 @@ export async function getPost(slug: string): Promise<Post> {
   return {
     slug,
     title: attributes.title,
+    html: await processMarkdown(body),
   };
 }
