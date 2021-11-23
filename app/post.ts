@@ -10,6 +10,12 @@ export interface Post {
   html?: string;
 }
 
+export interface PostCreateDto {
+  slug: string;
+  title: string;
+  markdown: string;
+}
+
 export interface PostMarkdownAttributes {
   title: string;
 }
@@ -60,4 +66,12 @@ export async function getPost(slug: string): Promise<Post> {
     title: attributes.title,
     html: await processMarkdown(body),
   };
+}
+
+export async function createPost(post: PostCreateDto) {
+  const md = `---\ntitle: ${post.title}\n---\n\n${post.markdown}`;
+
+  await fs.writeFile(path.join(postsPath, post.slug + '.md'), md);
+
+  return getPost(post.slug);
 }
