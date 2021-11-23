@@ -3,16 +3,16 @@ import fs from 'fs/promises';
 import parseFrontMatter from 'front-matter';
 import invariant from 'tiny-invariant';
 
-export type Post = {
+export interface Post {
   slug: string;
   title: string;
-};
+}
 
-export type PostMarkdownAttributes = {
+export interface PostMarkdownAttributes {
   title: string;
-};
+}
 
-let postsPath = path.join(__dirname, '../posts');
+const postsPath = path.join(__dirname, '../posts');
 
 function isValidPostAttributes(
   attributes: any
@@ -20,8 +20,9 @@ function isValidPostAttributes(
   return attributes?.title;
 }
 
-export async function getPosts() {
+export async function getPosts(): Promise<Post[]> {
   const dir = await fs.readdir(postsPath);
+
   return Promise.all(
     dir.map(async (filename) => {
       const file = await fs.readFile(path.join(postsPath, filename));
@@ -42,7 +43,7 @@ export async function getPosts() {
   );
 }
 
-export async function getPost(slug: string) {
+export async function getPost(slug: string): Promise<Post> {
   const filepath = path.join(postsPath, slug + '.md');
   const file = await fs.readFile(filepath);
   const { attributes } = parseFrontMatter(file.toString());
